@@ -1,7 +1,10 @@
 package com.reactive.java.corejava;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.stream.Stream;
 
+@UtilityClass
 public class StreamSources {
 
     public static Stream<String> stringNumbersStream() {
