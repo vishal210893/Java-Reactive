@@ -72,7 +72,7 @@ def image_generator(m, n, size, border, id_list):
 
 def save_img(img_list, file_path):
     for key, img in img_list.items():
-        cv2.imwrite(file_path + str(key) + '_esl.jpg', np.asarray(img['patterns']))
+        cv2.imwrite(file_path + str(key) + '_esl_python.jpg', np.asarray(img['patterns']))
 
 
 if __name__ == '__main__':
