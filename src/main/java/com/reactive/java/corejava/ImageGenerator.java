@@ -2,7 +2,6 @@ package com.reactive.java.corejava;
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.crypto.digests.Blake2sDigest;
 import org.bouncycastle.util.encoders.Hex;
@@ -27,8 +26,8 @@ public class ImageGenerator {
         }
 
         int length = Math.min(size[0], size[1]);
-        int[] rowUnits = getUnits(length, m, size[0]);
-        int[] colUnits = getUnits(length, n, size[1]);
+        int[] rowUnits = getUnits(m, length, size[0]).stream().mapToInt(i -> i).toArray();
+        int[] colUnits = getUnits(n, length, size[1]).stream().mapToInt(i -> i).toArray();
 
         ArrayList<Integer> code = new ArrayList<>();
         if ((m * n - 4) / 8 > 0) {
@@ -111,7 +110,7 @@ public class ImageGenerator {
         return patternResult;
     }
 
-    private static int[] getUnits(int length, int units, int size) {
+ /*   private static int[] getUnits(int length, int units, int size) {
         int[] unitArray = new int[units + 1];
         int step = length / units;
         for (int i = 0; i < units; i++) {
@@ -119,7 +118,24 @@ public class ImageGenerator {
         }
         unitArray[units] = length;
         return unitArray;
+    }*/
+
+    public static ArrayList<Integer> getUnits(int pattern, int length, int patVal) {
+        List<Integer> rowUnits = new ArrayList<>();
+
+        for (int i = 0; i < length - 1; i += length / pattern) {
+            rowUnits.add(i );
+        }
+        if (rowUnits.size() < pattern + 1) {
+            rowUnits.add(length);
+        }
+        ArrayList<Integer> adjustedRowUnits = new ArrayList<>();
+        for (int unit : rowUnits) {
+            adjustedRowUnits.add(unit + (patVal - length) / 2);
+        }
+        return adjustedRowUnits;
     }
+
 
     private static void fillRectangle(int[][] array, int startRow, int startCol, int rows, int cols, int fillValue) {
         for (int i = 0; i < rows; i++) {
@@ -171,35 +187,17 @@ public class ImageGenerator {
 
     public static void main(String[] args) {
         try {
-            /*
-            Options options = new Options();
-        	options.addOption(Option.builder().longOpt("pattern_size").hasArgs().desc("Pattern size (m, n)").build());
-        	options.addOption(Option.builder().longOpt("bezel_size").hasArgs().desc("Bezel size (height, width)").build());
-        	options.addOption(Option.builder().longOpt("border").hasArgs().desc("Include border (0 or 1)").build());
-        	options.addOption(Option.builder().longOpt("id_path").hasArg().desc("Path to ID file").build());
-        	options.addOption(Option.builder().longOpt("file_path").hasArg().desc("Output file path").build());
-
-        	CommandLineParser parser = new DefaultParser();
-
-            CommandLine cmd = parser.parse(options, args);
-
-            int[] patternSize = parseIntegerArray(cmd.getOptionValues("pattern_size"));
-            int[] bezelSize = parseIntegerArray(cmd.getOptionValues("bezel_size"));
-            boolean border = cmd.hasOption("border") && Integer.parseInt(cmd.getOptionValue("border")) == 1;
-            String idPath = cmd.getOptionValue("id_path");
-            String filePath = cmd.getOptionValue("file_path");
-            */
 
             int[] patternSize = new int[]{4, 5};
-            int[] bezelSize = new int[]{200, 180};
+            int[] bezelSize = new int[]{180, 200};
             boolean border = false;
+
             String idPath = "C:\\Users\\SolumTravel\\Downloads\\id_list.txt";
             String filePath = "C:\\Users\\SolumTravel\\Desktop\\python_image\\";
-
             List<String> eslIdList = FileUtils.readLines(new File(idPath), StandardCharsets.UTF_8);
             Map<String, Map<String, Object>> results = imageGenerator(patternSize[0], patternSize[1], bezelSize, border, eslIdList);
             saveImg(results, filePath);
-            try (FileWriter file = new FileWriter(filePath + "esl_info.json")) {
+            try (FileWriter file = new FileWriter(filePath + "esl_info_java.json")) {
                 file.write(new Gson().toJson(Collections.singletonList(results)));
             }
 
@@ -207,15 +205,4 @@ public class ImageGenerator {
             e.printStackTrace();
         }
     }
-
-    /*
-    private static int[] parseIntegerArray(String[] values) {
-        int[] result = new int[values.length];
-        for (int i = 0; i < values.length; i++) {
-            result[i] = Integer.parseInt(values[i]);
-        }
-        return result;
-    }
-    */
-
 }
