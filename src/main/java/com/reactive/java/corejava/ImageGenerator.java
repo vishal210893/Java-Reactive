@@ -87,7 +87,7 @@ public class ImageGenerator {
         code.add(code.size() + Math.min(-1, -1 * (n - 2)), 1);
         code.add(0);
 
-        int[][] resultPatterns = new int[size[0]][size[1]];
+        int[][] resultPatterns = patterns;
         for (int rIdx = 0; rIdx < rowUnits.length - 1; rIdx++) {
             for (int cIdx = 0; cIdx < colUnits.length - 1; cIdx++) {
                 int value = code.get(n * rIdx + cIdx) * 255;
@@ -162,7 +162,7 @@ public class ImageGenerator {
                         image.setRGB(j, i, patterns[i][j] == 255 ? 0xFFFFFF : 0);
                     }
                 }
-                ImageIO.write(image, "jpg", new File(filePath + key + "_esl.jpg"));
+                ImageIO.write(image, "jpg", new File(filePath + key + "_esl_java.jpg"));
             } catch (IOException ex) {
                 log.error(ex.getMessage(), ex);
             }
@@ -170,17 +170,17 @@ public class ImageGenerator {
     }
 
     public static void main(String[] args) {
-        // Create and configure the command-line options
-        Options options = new Options();
-        options.addOption(Option.builder().longOpt("pattern_size").hasArgs().desc("Pattern size (m, n)").build());
-        options.addOption(Option.builder().longOpt("bezel_size").hasArgs().desc("Bezel size (height, width)").build());
-        options.addOption(Option.builder().longOpt("border").hasArgs().desc("Include border (0 or 1)").build());
-        options.addOption(Option.builder().longOpt("id_path").hasArg().desc("Path to ID file").build());
-        options.addOption(Option.builder().longOpt("file_path").hasArg().desc("Output file path").build());
-
-        CommandLineParser parser = new DefaultParser();
-
         try {
+            /*
+            Options options = new Options();
+        	options.addOption(Option.builder().longOpt("pattern_size").hasArgs().desc("Pattern size (m, n)").build());
+        	options.addOption(Option.builder().longOpt("bezel_size").hasArgs().desc("Bezel size (height, width)").build());
+        	options.addOption(Option.builder().longOpt("border").hasArgs().desc("Include border (0 or 1)").build());
+        	options.addOption(Option.builder().longOpt("id_path").hasArg().desc("Path to ID file").build());
+        	options.addOption(Option.builder().longOpt("file_path").hasArg().desc("Output file path").build());
+
+        	CommandLineParser parser = new DefaultParser();
+
             CommandLine cmd = parser.parse(options, args);
 
             int[] patternSize = parseIntegerArray(cmd.getOptionValues("pattern_size"));
@@ -188,6 +188,13 @@ public class ImageGenerator {
             boolean border = cmd.hasOption("border") && Integer.parseInt(cmd.getOptionValue("border")) == 1;
             String idPath = cmd.getOptionValue("id_path");
             String filePath = cmd.getOptionValue("file_path");
+            */
+
+            int[] patternSize = new int[]{4, 5};
+            int[] bezelSize = new int[]{200, 180};
+            boolean border = false;
+            String idPath = "C:\\Users\\SolumTravel\\Downloads\\id_list.txt";
+            String filePath = "C:\\Users\\SolumTravel\\Desktop\\python_image\\";
 
             List<String> eslIdList = FileUtils.readLines(new File(idPath), StandardCharsets.UTF_8);
             Map<String, Map<String, Object>> results = imageGenerator(patternSize[0], patternSize[1], bezelSize, border, eslIdList);
@@ -196,11 +203,12 @@ public class ImageGenerator {
                 file.write(new Gson().toJson(Collections.singletonList(results)));
             }
 
-        } catch (ParseException | IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /*
     private static int[] parseIntegerArray(String[] values) {
         int[] result = new int[values.length];
         for (int i = 0; i < values.length; i++) {
@@ -208,5 +216,6 @@ public class ImageGenerator {
         }
         return result;
     }
+    */
 
 }
